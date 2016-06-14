@@ -1,33 +1,50 @@
-from edge import Edge
+class Node:
+    """docstring for Node"""
 
-class Node():
-	"""docstring for Node"""
-	
-	adjacencency_list = list()
-	node_degree = None
+    adjacency_list = list()
 
-	def __init__(self, index):
-		self.index = index
+    def __init__(self, index=None):
+        self.__index = index
+        self.__node_degree = None
 
-	def insertAdjacentNode(self, Node):
-		self.adjacencency_list.append(Node.index)
+    @property
+    def index(self):
+        return self.__index
 
-	def removeAdjacentNode(self, Node):
-		self.adjacencency_list.remove(Node.index)
-		# Remover a aresta que conecta os dois vertices
+    @index.setter
+    def index(self, value):
+        self.__index = value
 
-	def setNodeDegree(self, value):
-		self.node_degree = value
-
-	# Increment or decrement the node dregree set on the 
-	# configuration of the parameter 'increase'.
-	def updateNodeDegree(self, increase):
-		if increase:
-			self.node_degree += 1
-		else:
-			self.node_degree -= 1
+    @index.deleter
+    def index(self):
+        del self.__index
 
 
+    @property
+    def node_degree(self):
+        return self.__node_degree
 
+    @node_degree.setter
+    def node_degree(self, value):
+        self.__node_degree = value
 
-		
+    @node_degree.deleter
+    def node_degree(self):
+        del self.__node_degree
+
+    # Removes an edge that connects two vertex
+    # TODO!!!
+
+    def insertAdjacentNode(self, node):
+        self.adjacency_list.append(node.index)
+
+    def removeAdjacentNode(self, node):
+        self.adjacency_list.remove(node.index)
+
+    # Increment or decrement the node degree set on the
+    # configuration of the parameter 'increase'.
+    def updateNodeDegree(self, increase):
+        if increase:
+            self.node_degree += 1
+        else:
+            self.node_degree -= 1

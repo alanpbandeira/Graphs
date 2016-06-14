@@ -1,26 +1,60 @@
-from node import Node
+class Edge:
+    """docstring for Edge"""
 
-class Edge():
-	"""docstring for Edge"""
+    def __init__(self, free_element=False, nodes=None, weight=None, edge_id=None):
+        self.__e_id = edge_id
+        self.__weight = weight
 
-	incident_nodes = None
-	weight = None
+        if free_element:
+            self.__incident_nodes = None
+        else:
+            self.incidentNodes(nodes)
 
-	def __init__(self, e_id, weight, Node_a, Node_b):
-		self.e_id   = e_id
-		self.weight = weight
-		slef.setIncident((Node_a, Node_b))
+    @property
+    def incidentNodes(self):
+        return self.__incident_nodes
 
-	def setIncidentNodes(self, nodes):
-		self.incident_nodes = (nodes[0].index, nodes[1].index)
-		nodes[0].insertAdjacentNode(nodes[1])
-		nodes[1].insertAdjacentNode(nodes[0])
+    @incidentNodes.setter
+    def incidentNodes(self, nodes):
+        """
+        Sets the incidents nodes of an edge and updates the nodes
+        attributes adjacency list and degree.
 
-		nodes[0].updateDegree()
-		nodes[1].updateDegree()
+        :param nodes: tuple of Node elements
+        :return void:
+        """
+        self.__incident_nodes = nodes
 
-	def delIncidentNodes(self):
-		self.incident_nodes = None
+        nodes[0].insertAdjacentNode(nodes[1])
+        nodes[1].insertAdjacentNode(nodes[0])
 
-	def setWeight(self, value):
-		self.weight = value
+        nodes[0].updateDegree()
+        nodes[1].updateDegree()
+
+    @incidentNodes.deleter
+    def incidentNodes(self):
+        del self.__incident_nodes
+
+    @property
+    def weight(self):
+        return self.__weight
+
+    @weight.setter
+    def weight(self, value):
+        self.__weight = value
+
+    @weight.deleter
+    def weight(self):
+        del self.__weight
+
+    @property
+    def e_id(self):
+        return self.e_id
+
+    @e_id.setter
+    def e_id(self, value):
+        self.e_id = value
+
+    @e_id.deleter
+    def e_id(self):
+        del self.e_id
