@@ -1,43 +1,63 @@
-from node import Node
-from edge import Edge
-
+import node
+import edge
+import random
 
 class Graph:
-    """docstring for Graph"""
+    """
 
-    edge_list = list()
-    node_list = list()
+    """
+    node_list = None
+    edge_list = None
 
-    __graph_order = None
-    __graph_size = None
+    def __init__(self, file_name):
+            self.edgesFromFile(file_name)
 
-    def __init__(self, edge_list, node_list):
-        self.edge_list = edge_list
-        self.node_list = node_list
+    def edgesFromFile(self, file_name):
+        path = 'data/' + file_name
 
-    def createNode(self, rand=False):
-        pass
+        fhand = open(path, 'r')
 
-    def insertNode(self, new_node, adjacent_node, rand=False):
-        if rand:
-            pass
-        else:
-            new_edge = Edge()
-            new_edge.incidentNodes((new_node, adjacent_node))
-            self.edge_list.append
+        for line in fhand:
+            line = line.split(',')
+            self.edge_list.append(edge.Edge((line[0], line[1]), line[2]))
 
-    def removeNode(self, node_index):
-        pass
+    def nodesFromEdges(self):
+        for edge in self.edge_list:
 
-    def removeEdge(self, edge_id):
-        pass
 
-    def createAdjacencyMatrix(self):
-        pass
+    def setNodeAdj(self, elected_node):
+        """
+        Provides the adjacency list of a node from a list of edges.
+        :param elected_node:
+        :return a_list: a list of adjacent nodes of the elected_node
+        """
+        a_list = []
 
-    def createCostMatrix(self):
-        pass
+        for t in self.edge_list:
+            if elected_node.node_id in t.incident_nodes:
+                if elected_node is t.incident_nodes[0]:
+                    a_list.append(t.incident_nodes[1])
+                else:
+                    a_list.append(t.incident_nodes[0])
 
-    def createDistanceMatrix(self):
-        pass
+        return a_list
 
+    def adjacencyMatrix(self):
+        """
+        Create the adjacency matrix of the graph
+        :return mtx: A two dimensional array  info of the graph adjacency.
+        """
+        mtx = []
+
+        for node_x in self.node_list:
+            line = []
+
+            for node_y in self.node_list:
+                if node_y.node_id in node_x.adjacency_list:
+                    line.append(1)
+                else:
+                    line.append(0)
+
+            mtx.append(line)
+
+        return mtx
