@@ -5,7 +5,10 @@ import random
 
 class Graph:
     """
-
+    @:var node_list: Dictionary structure that represents the vertex set; [string node_id] : [Node node]
+    @:var edge_list: List structure that represents the edge set; [Edge edge] * n_edges
+    @:var incidence_list: List structure that represents the edge set using the incidence relationship between vertex;
+    [(string node_id_a, string node_id_b)]
     """
     node_list = {}
     edge_list = []
@@ -16,9 +19,9 @@ class Graph:
 
     def graphFromFile(self, file_name):
         """
-        Instantiate a graph from a csv file
-        @:param file_name: String - name of the file to
-                be read. It must be an .csv file.
+        - Instantiate a graph from a csv file
+        -
+        @:param file_name: String - name of the file to be read. It must be an .csv file.
         """
         path = 'data/' + file_name
         fhand = open(path, 'r')
@@ -39,15 +42,11 @@ class Graph:
             if line[1] not in self.node_list:
                 self.node_list[line[1]] = (Node(line[1], self.setNodeAdj(line[1])))
 
-    def nodesFromEdges(self):
-        for edge in self.edge_list:
-            pass
-
     def setNodeAdj(self, node_id):
         """
-        Provides the adjacency list of a node from a list of edges.
-        :param node_id: The id that identify the node from which the
-        adjacency list will be draw.
+        - Provides the adjacency list of a node from a list of edges.
+        -
+        :param node_id: The id that identify the node from which the adjacency list will be draw.
         :return a_list: a list of adjacent nodes of the node_id
         """
         a_list = []
@@ -61,9 +60,19 @@ class Graph:
 
         return a_list
 
+
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+# - MATRIX OPERATIONS
+#
+# -> Adjacency Matrix
+# -> Cost Matrix
+#
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+
     def adjacencyMatrix(self):
         """
-        Create the adjacency matrix of the graph
+        - Create the adjacency matrix of the graph
+        -
         :return mtx: A two dimensional array  info of the graph adjacency.
         """
         mtx = []
@@ -84,7 +93,8 @@ class Graph:
 
     def costMatrix(self, minimize=True):
         """
-        Create the adjacency matrix of the graph
+        - Create the adjacency matrix of the graph
+        -
         :return mtx: A two dimensional array  info of the graph adjacency.
         """
         mtx = []
@@ -107,3 +117,69 @@ class Graph:
             mtx.append(line)
 
         return mtx
+
+
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+# - PATH OPERATIONS
+#
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+
+    def hamiltonianCycle(self, start, cycle=False):
+        path = []
+
+        elected = start
+        next_node = random.choice(self.node_list[elected].adjacency_list)
+
+        while next_node is not start and next_node not in path:
+            path.append(elected)
+            elected = next_node
+
+            next_node = random.choice(self.node_list[elected].adjacency_list)
+
+            print (next_node)
+
+        path.append(start)
+
+        return path
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

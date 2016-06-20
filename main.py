@@ -1,10 +1,21 @@
 import random, math
 import graph
 
-g = graph.Graph('test.csv')
+g = graph.Graph('test01.csv')
 
-for line in g.costMatrix():
-    print(line)
+max_cycles = math.factorial(len(g.node_list) - 1)
+print (max_cycles)
+cylces = []
+k = g.hamiltonianCycle('a')
+
+while k not in cylces:
+    cylces.append(k)
+    k = g.hamiltonianCycle('a')
+
+print ([x for x in cylces])
+
+# for line in g.costMatrix():
+#     print(line)
 
 # for y in g.edge_list:
 #     print(y.incident_nodes, y.weight)
