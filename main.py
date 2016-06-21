@@ -1,21 +1,27 @@
 import random, math
 import graph
 
-g = graph.Graph('test01.csv')
+g = graph.Graph('test.csv')
 
-max_cycles = math.factorial(len(g.node_list) - 1)
-print (max_cycles)
-cylces = []
-k = g.hamiltonianCycle('a')
+max_cycles = math.factorial(len(g.node_data) - 1)
 
-while k not in cylces:
-    cylces.append(k)
-    k = g.hamiltonianCycle('a')
+# print (max_cycles)
+# cylces = []
+# k = g.hamiltonianCycle('a')
+#
+# while k not in cylces:
+#     cylces.append(k)
+#     k = g.hamiltonianCycle('a')
+#
+# print ([x for x in cylces])
 
-print ([x for x in cylces])
+for line in g.costMatrix():
+    print(line)
 
-# for line in g.costMatrix():
-#     print(line)
+print('\n')
+print g.node_list
+print('\n')
+print(g.nearestNeighbor())
 
 # for y in g.edge_list:
 #     print(y.incident_nodes, y.weight)
