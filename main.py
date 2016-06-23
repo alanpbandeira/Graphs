@@ -1,9 +1,8 @@
 import random, math
 import graph
 
-g = graph.Graph('test.csv')
+g = graph.Graph('data01.csv')
 
-max_cycles = math.factorial(len(g.node_data) - 1)
 
 # print (max_cycles)
 # cylces = []
@@ -18,10 +17,15 @@ max_cycles = math.factorial(len(g.node_data) - 1)
 for line in g.costMatrix():
     print(line)
 
+# print('\n')
+# for element in g.incidence_list:
+#     print(element)
+
+# print('\n')
+# print(len(g.incidence_list))
 print('\n')
-print g.node_list
-print('\n')
-print(g.nearestNeighbor())
+for x in range(100):
+    print(g.nearestNeighbor())
 
 # for y in g.edge_list:
 #     print(y.incident_nodes, y.weight)
