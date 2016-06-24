@@ -15,8 +15,9 @@ class Graph:
     edge_data = {}
     incidence_list = []
 
-    def __init__(self, file_name):
-            self.graphFromFile(file_name)
+    def __init__(self, file_name, symmetric=True):
+        self.symmetric_mtx = symmetric
+        self.graphFromFile(file_name)
 
     def graphFromFile(self, file_name):
         """
@@ -28,7 +29,12 @@ class Graph:
         fhand = open(path, 'r')
         for line in fhand:
             line = line.strip().split(',')
-            self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+            if self.symmetric_mtx:
+                self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
+            else:
+                self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+
         fhand.close()
 
         self.incidence_list = [x for x in self.edge_data]
@@ -62,7 +68,6 @@ class Graph:
 
         return a_list
 
-
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 # - MATRIX OPERATIONS
 #
@@ -90,7 +95,7 @@ class Graph:
 
         return mtx
 
-    def costMatrix(self, minimize=True, symmetric=True):
+    def costMatrix(self, minimize=True):
         """
         - Create the adjacency matrix of the graph
         -
@@ -98,7 +103,7 @@ class Graph:
         """
         mtx = []
 
-        if symmetric:   # Build a symmetric cost matrix using the edges weight
+        if self.symmetric_mtx:  # Build a symmetric cost matrix using the edges weight
             for node_x in self.node_list:
                 line = []
                 for node_y in self.node_list:
@@ -113,7 +118,7 @@ class Graph:
                             line.append(-1)
 
                 mtx.append(line)
-        else:           # Build an asymmetric cost matrix using the edges weight
+        else:  # Build an asymmetric cost matrix using the edges weight
             for node_x in self.node_list:
                 line = []
                 for node_y in self.node_list:
@@ -131,11 +136,10 @@ class Graph:
 
         return mtx
 
-
-# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
-# - PATH OPERATIONS
-#
-# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+    # - PATH OPERATIONS
+    #
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
     def nearestNeighbor(self, symmetric=True):
         """
@@ -145,29 +149,79 @@ class Graph:
         """
         path = []
         path_cost = 0
-        c_mtx = self.costMatrix(True, symmetric)
+        c_mtx = self.costMatrix(True)
 
         first_node = elected_node = c_mtx.index(random.choice(c_mtx))
-        #print(elected_node)
+        # print(elected_node)
         path.append(self.node_list[elected_node])
-        
-        while len(path) < len(self.node_list):
+
+        while len(path) <= len(self.node_list):
             candidate_value = min(c_mtx[elected_node])
-            candidate_node = c_mtx[elected_node].index(candidate_value)
+            if candidate_value == 9999:
+                path_cost += self.edge_data[(str(path[len(path) - 1]), str(self.node_list[first_node]))].weight
+                path.append(self.node_list[first_node])
+                break
+            candidate_node = self.randomMultiIndex(c_mtx[elected_node], candidate_value)
             if self.node_list[candidate_node] in path:
                 c_mtx[elected_node][candidate_node] = 9999
                 continue
             else:
                 path.append(self.node_list[candidate_node])
                 path_cost += candidate_value
-                print(elected_node, candidate_node, path_cost)
+                # print(elected_node, candidate_node, path_cost)
                 elected_node = candidate_node
 
-        if len(path) < len(self.node_list):
-            print("Non-Hamiltonian path found")
-            return path
+        if len(path) <= len(self.node_list):
+            # print("Non-Hamiltonian path found")
+            return False
         else:
             return path, path_cost
+
+    def pathCost(self, path):
+        cost = 0
+
+        for node_x, node_y in zip(path[:len(path) - 1], path[1:]):
+            cost += self.edge_data[str(node_x), str(node_y)].weight
+
+        return cost
+
+    def twoOptPath(self, path):
+        current_path = path
+        current_cost = self.pathCost(path)
+        print('\n')
+
+        for node_x in current_path[1:len(path) - 2]:
+            index_x = current_path.index(node_x)
+
+            candidate_path = current_path[:index_x] + [current_path[index_x + 1], current_path[index_x]] + current_path[index_x+2:]
+
+            candidate_cost = self.pathCost(candidate_path)
+            if candidate_cost < current_cost:
+                current_path = candidate_path
+                current_cost = candidate_cost
+                print('Nova melhor solução')
+                print('Path: ', current_path)
+                print('Cost: ', current_cost)
+            else:
+                continue
+
+        # for node_x, node_y in zip(current_path[1:len(path)-2], current_path[2:len(path)-1]):
+        #     index_x = current_path.index(node_x)
+        #     index_y = current_path.index(node_y)
+        #     print (index_x, index_y)
+        #     candidate_path = current_path[:index_x] + [node_y] + [node_x] + current_path[index_y+1:]
+        #     candidate_cost = self.pathCost(candidate_path)
+        #     #print (candidate_cost)
+        #     if candidate_cost < current_cost:
+        #         current_path = candidate_path
+        #         current_cost = candidate_cost
+        #         print('Nova melhor solução')
+        #         print('Path: ', current_path)
+        #         print('Cost: ', current_cost)
+        #     else:
+        #         continue
+
+        return current_path, current_cost
 
     def nearestInsertionPath(self, symmetric=True):
         """
@@ -211,11 +265,11 @@ class Graph:
             candidate_position = 1
             for node in path[:(len(path) - 1)]:
                 edge_a = self.edge_data[(str(node), str(self.node_list[nearest_node]))].weight
-                #edge_a = c_mtx[self.node_list.index(node)][self.node_list.index(nearest_node)]
+                # edge_a = c_mtx[self.node_list.index(node)][self.node_list.index(nearest_node)]
                 edge_b = self.edge_data[str(self.node_list[nearest_node]), str(path[candidate_position])].weight
-                #edge_b = c_mtx[self.node_list.index(nearest_node)][self.node_list.index(path[candidate_position])]
+                # edge_b = c_mtx[self.node_list.index(nearest_node)][self.node_list.index(path[candidate_position])]
                 edge_c = self.edge_data[(str(node), str(path[candidate_position]))].weight
-                #edge_c = c_mtx[self.node_list.index(node)][self.node_list.index(candidate_position)]
+                # edge_c = c_mtx[self.node_list.index(node)][self.node_list.index(candidate_position)]
 
                 position_delta = edge_a + edge_b - edge_c
 
@@ -229,59 +283,47 @@ class Graph:
 
             path = path[:position] + [self.node_list[nearest_node]] + path[position:]
 
-            c_mtx[self.node_list.index(path[position-1])][self.node_list.index(path[position])] = 9999
-            c_mtx[self.node_list.index(path[position])][self.node_list.index(path[position-1])] = 9999
-            c_mtx[self.node_list.index(path[position])][self.node_list.index(path[position+1])] = 9999
-            c_mtx[self.node_list.index(path[position+1])][self.node_list.index(path[position])] = 9999
+            c_mtx[self.node_list.index(path[position - 1])][self.node_list.index(path[position])] = 9999
+            c_mtx[self.node_list.index(path[position])][self.node_list.index(path[position - 1])] = 9999
+            c_mtx[self.node_list.index(path[position])][self.node_list.index(path[position + 1])] = 9999
+            c_mtx[self.node_list.index(path[position + 1])][self.node_list.index(path[position])] = 9999
 
-        #print(self.node_list[nearest_node], nearest_node_value)
+        # print(self.node_list[nearest_node], nearest_node_value)
 
         return path
 
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+    # - STATIC METHODS
+    #
+    # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
+    @staticmethod
+    def randomMin(array):
+        min_candidates = [array[0]]
+        for element in array[1:]:
+            if element == min(min_candidates):
+                min_candidates.append(element)
+            elif element < min(min_candidates):
+                elements = len(min_candidates)
+                min_candidates = [element for x in range(elements)]
+            else:
+                continue
 
+        return random.choice(min_candidates)
 
+    @staticmethod
+    def randomMultiIndex(array, value):
+        """
+        Select randomly a index of an array of similar values using the value as a parameter.
+        :return index:
+        """
+        candidate_indexes = []
+        dull_array = array
 
+        for element in dull_array:
+            if element == value:
+                index = dull_array.index(element)
+                candidate_indexes.append(index)
+                dull_array[index] = 9999
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return random.choice(candidate_indexes)
