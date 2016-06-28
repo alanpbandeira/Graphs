@@ -30,10 +30,19 @@ class Graph:
         for line in fhand:
             line = line.strip().split(',')
             if self.symmetric_mtx:
-                self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
-                self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
+                try:
+                    self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                    self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
+                except ValueError:
+                    self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), float(line[2]))
+                    self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), float(line[2]))
+                # self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                # self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
             else:
-                self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                try:
+                    self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                except ValueError:
+                    self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), float(line[2]))
 
         fhand.close()
 
@@ -95,6 +104,26 @@ class Graph:
 
         return mtx
 
+    def relativeCostMatrix(self, minimize=True):
+        a = self.adjacencyMatrix()
+        mtx = []
+
+        for node_x in a:
+            line = []
+            for node_y in node_x:
+                if node_x[node_x.index(node_y)] == 1:
+                    cost = self.edge_data[(str((a.index(node_x)+1)), str((node_x.index(node_y)+1)))].weight
+                    #print (cost)
+                    line.append(cost)
+                else:
+                    if minimize:
+                        line.append(9999)
+                    else:
+                        line.append(-1)
+            mtx.append(line)
+
+        return mtx
+
     def costMatrix(self, minimize=True):
         """
         - Create the adjacency matrix of the graph
@@ -149,7 +178,7 @@ class Graph:
         """
         path = []
         path_cost = 0
-        c_mtx = self.costMatrix(True)
+        c_mtx = self.relativeCostMatrix(True)
 
         first_node = elected_node = c_mtx.index(random.choice(c_mtx))
         # print(elected_node)
@@ -173,6 +202,7 @@ class Graph:
 
         if len(path) <= len(self.node_list):
             # print("Non-Hamiltonian path found")
+            print (path)
             return False
         else:
             return path, path_cost
