@@ -170,7 +170,7 @@ class Graph:
     #
     # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
-    def nearestNeighbor(self, symmetric=True):
+    def randomNearestNeighbor(self):
         """
         - Build a minimum path using the Nearest Neighbor heuristic sed to solve the TSP
         - but do not guarantee optimal solution.
@@ -178,7 +178,7 @@ class Graph:
         """
         path = []
         path_cost = 0
-        c_mtx = self.relativeCostMatrix(True)
+        c_mtx = self.costMatrix(True)
 
         first_node = elected_node = c_mtx.index(random.choice(c_mtx))
         # print(elected_node)
@@ -206,6 +206,47 @@ class Graph:
             return False
         else:
             return path, path_cost
+
+    def nodeNearestNeighbor(self, symmetric=True):
+        """
+        - Build a minimum path using the Nearest Neighbor heuristic sed to solve the TSP
+        - but do not guarantee optimal solution.
+        :return path, path_cost: The path found and it's cost
+        """
+
+        for node in self.node_list:
+            path = []
+            path_cost = 0
+            c_mtx = self.relativeCostMatrix(True)
+            first_node = elected_node = self.node_list.index(node)
+            # print(elected_node)
+            path.append(self.node_list[elected_node])
+
+            while len(path) <= len(self.node_list):
+                candidate_value = min(c_mtx[elected_node])
+                if candidate_value == 9999:
+                    if path[len(path) - 1] == self.node_list[first_node]:
+                        break
+                    else:
+                        path_cost += self.edge_data[(str(path[len(path) - 1]), str(self.node_list[first_node]))].weight
+                        path.append(self.node_list[first_node])
+                        break
+                candidate_node = self.randomMultiIndex(c_mtx[elected_node], candidate_value)
+                if self.node_list[candidate_node] in path:
+                    c_mtx[elected_node][candidate_node] = 9999
+                    continue
+                else:
+                    path.append(self.node_list[candidate_node])
+                    path_cost += candidate_value
+                    # print(elected_node, candidate_node, path_cost)
+                    elected_node = candidate_node
+
+            if len(path) <= len(self.node_list):
+                # print("Non-Hamiltonian path found")
+                print (path)
+                continue
+            else:
+                return path, path_cost
 
     def pathCost(self, path):
         cost = 0
