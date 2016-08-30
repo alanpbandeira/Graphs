@@ -5,9 +5,9 @@ import random
 
 class Graph:
     """
-    @:var node_list: Dictionary structure that represents the vertex set; [string node_id] : [Node node]
-    @:var edge_list: List structure that represents the edge set; [Edge edge] * n_edges
-    @:var incidence_list: List structure that represents the edge set using the incidence relationship between vertex;
+    @:var node_list: Dictionary; [string node_id] : [Node node]
+    @:var edge_list: List; [Edge edge] * n_edges
+    @:var incidence_list: List;
     [(string node_id_a, string node_id_b)]
     """
     node_data = {}
@@ -27,6 +27,7 @@ class Graph:
         """
         path = 'data/' + file_name
         fhand = open(path, 'r')
+        
         for line in fhand:
             line = line.strip().split(',')
             if self.symmetric_mtx:
@@ -36,8 +37,8 @@ class Graph:
                 except ValueError:
                     self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), float(line[2]))
                     self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), float(line[2]))
-                # self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
-                # self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
+                    # self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
+                    # self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
             else:
                 try:
                     self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
