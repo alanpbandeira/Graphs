@@ -28,6 +28,7 @@ class Graph:
         path = 'data/' + file_name
         fhand = open(path, 'r')
         
+        # Construct
         for line in fhand:
             line = line.strip().split(',')
             if self.symmetric_mtx:
@@ -37,8 +38,6 @@ class Graph:
                 except ValueError:
                     self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), float(line[2]))
                     self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), float(line[2]))
-                    # self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
-                    # self.edge_data[(line[1], line[0])] = Edge((line[1], line[0]), int(line[2]))
             else:
                 try:
                     self.edge_data[(line[0], line[1])] = Edge((line[0], line[1]), int(line[2]))
