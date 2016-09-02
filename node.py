@@ -9,3 +9,4 @@ class Node:
         self.node_id = node_id
         self.adjacency_list = adjacency_list
         self.degree = len(adjacency_list)
+        self.visited = False
