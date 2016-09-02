@@ -3,7 +3,7 @@ from edge import Edge
 import random
 
 
-class Graph:
+class Graph(object):
     """
     @:var node_list: Dictionary; [string node_id] : [Node node]
     @:var edge_list: List; [Edge edge] * n_edges

@@ -16,7 +16,7 @@ def bfs(graph, root):
 		current_node = queue.pop(0)
 		print (current_node)
 
-		for neightbour in graph.node_data[current_node].adjacency_list:
+		for neightbour in sorted(graph.node_data[current_node].adjacency_list):
 			if neightbour not in visited:
 				visited.append(neightbour)
 				queue.append(neightbour)
@@ -31,9 +31,7 @@ def dfs(graph, root):
 	graph.node_data[root].visited = True
 	print (root)
 
-	for node in graph.node_data[root].adjacency_list:
-		if not graph.node_data[root].visited:
+	for node in sorted(graph.node_data[root].adjacency_list):
+		#print (node)
+		if not graph.node_data[str(node)].visited:
 			dfs(graph, node)
-
-
-
