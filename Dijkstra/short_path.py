@@ -1,5 +1,6 @@
 import heapq
 
+
 def shortestPath(graph, start_node):
 	"""
 	- @Info: Calculate the shortes path between two nodes of the graph.
@@ -16,7 +17,7 @@ def shortestPath(graph, start_node):
 		acutal_vertex = heapq.heappop(queue)
 
 		for node in graph.node_data[acutal_vertex].adjacency_list:
-			new_distance = graph.node_data[acutal_vertex].min_distance + graph.edge_data[(acutal_vertex, node)]
+			new_distance = graph.node_data[acutal_vertex].min_distance + graph.edge_data[(acutal_vertex, node)].weight
 
 			if new_distance < graph.node_data[node].min_distance:
 				graph.node_data[node].predecessor = acutal_vertex

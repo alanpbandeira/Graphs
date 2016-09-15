@@ -270,7 +270,7 @@ class Graph(object):
             if candidate_cost < current_cost:
                 current_path = candidate_path
                 current_cost = candidate_cost
-                print('Nova melhor solução')
+                print('Nova melhor solucao')
                 print('Path: ', current_path)
                 print('Cost: ', current_cost)
             else:
@@ -286,7 +286,7 @@ class Graph(object):
         #     if candidate_cost < current_cost:
         #         current_path = candidate_path
         #         current_cost = candidate_cost
-        #         print('Nova melhor solução')
+        #         print('Nova melhor solucao')
         #         print('Path: ', current_path)
         #         print('Cost: ', current_cost)
         #     else:
